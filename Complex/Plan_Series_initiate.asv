@@ -62,11 +62,11 @@ gr2 = 5; % Gear ratio
 
 % Mechanical parameters  ++++++++++++++++++
 
-Mv = 1300 ;    % Vehicle curb weight + 250 kg passenger and cargo
-rw = 0.301;	        % wheel radius (m)
-Cd = 0.254; 	        % air_resistance
+Mv = 1325 + 250;    % Vehicle curb weight + 250 kg passenger and cargo
+rw = 0.30;	        % wheel radius (m)
+Cd = 0.26; 	        % air_resistance
 Cr = 0.008;	        % roll resistance
-Av = 2.289;%1.725*1.490;   % Front area, Width*Height (2.57 m2)
+Av = 1.725*1.490;   % Front area, Width*Height (2.57 m2)
 rho_air = 1.225;     % Air density [kg/m3]
 grav = 9.81;
 vmax=160/3.6;       % 160 km/h max speed
@@ -76,8 +76,8 @@ kb = 2.6;           % PGT ratio
 Pvehicle_max = (Cr*Mv*grav+1/2*rho_air*Cd*Av*vmax^2)*vmax;
 
 % Generator parameters  ++++++++++++++++++
-Pem1_max = 32.5*10000/60*2*pi()%20E3;       % Peak continuous power
-Tem1_max = 31;% 1.2*Tice_max;  % Peak continuous torque
+%Pem1_max = 20E3%20E3;       % Peak continuous power
+%Tem1_max = 1.2*Tice_max;  % Peak continuous torque
 %wem1_max=wice_max; % EM mounted on cranc shaft
 
 load EtaEM_THS;
@@ -85,11 +85,11 @@ load EtaEM_THS;
 Tem1 = [0:2.5:32.5];
 Wem1 = [0:500:10000];
 
-Jgenset=0.1; % Or 0.1 (default) or MG1 or MG2 or engine?
+Jgenset=0.1;
 
 % Traction motor parameters  ++++++++++++++++++
-Pem2_max = 400*6000/60*2*pi();       % Peak continuous power
-Tem2_max = 400;    % Peak continuous torque
+Pem2_max = 60E3;       % Peak continuous power
+%Tem2_max = 200;    % Peak continuous torque
 %wem2_max = vmax/rw*gr2; 
 
 Tem2 = [0:25:400];
@@ -99,7 +99,7 @@ Wem2 = [0:500:6000];
 
 % Power Electronics efficiency (preset)
     
-EtaPE = .98; % not included in efficiency map
+EtaPE = 1; % included in efficiency map
 
 % Fuel energy density [MJ / litre]
 if Fuel==1, % Gasoline
@@ -123,17 +123,9 @@ Wbatt = 201.6*6.5*3600;   % 100 Wh/kg, 13 kg
 %%%% you will remove more charge from the battery when you discharge at
 %%%% higher rates. Inverse goes for charging (so <1)
 
-% Pinput 21kW and Poutput 25kW
+% Pin
 
-P_battmax = 25000;
-P_battmin = 21000
-
-%[EtaBATT,Pbatt]=CreateBATTmap(P_battmin, P_battmax,Wbatt);
-
-battR = [0.7,0.63, 0.475, 0.4, 0.375, 0.38,0.37, 0.375,0.38, 0.375, 0.375]; % SOC of battery
-battV = [202.5,210,213,216,218,221,222,223,224,227,237]; %OC battery voltage based on state of charge
-SOC_tab = [0,10,20,30,40,50,60,70,80,90,100];
-
+[EtaBATT,Pbatt]=CreateBATTmap(Pem2_max,Wbatt);
 SOC_batt_ref_value = 70;   %  [%]
 OnOffMin = 30 ;
 OnOffMax = SOC_batt_ref_value-eps ;
