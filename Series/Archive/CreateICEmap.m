@@ -1,8 +1,8 @@
-function [PtoT,T,W,Tlim,FuelConsICE]=SkapaPtoT(Pice_max,wice_min, wice_max,Tice_max,EtaICE)
+function [PtoT,T,W,Tlim,FuelConsICE]=SkapaPtoT(Pice_max,wice_max,Tice_max,EtaICE)
 
 P = [0:Pice_max/(length(EtaICE(:,1))-1):Pice_max]'; 
 T = [0:Tice_max/(length(EtaICE(:,1))-1):Tice_max]';
-W = [wice_min:(wice_max-wice_min)/(length(EtaICE(1,:))-1):wice_max];
+W = [0:wice_max/(length(EtaICE(1,:))-1):wice_max];
 
 PtoT = zeros(length(P),4);
 PtoT(:,1) = P;
@@ -11,23 +11,15 @@ PtoT(:,1) = P;
 %%% Determines the fuel consumption at every point on the efficiency map
 for i=1:length(T); 
     for j=1:length(W);
-        FuelConsICE(i,j)=W(j)*T(i)/EtaICE(i,j)
-   
-        if FuelConsICE(i,j)==inf
-            FuelConsICE(i,j)= FuelConsICE(i-1,j);
-        end
-        
+        FuelConsICE(i,j)=W(i)*T(j)/EtaICE(i,j);
     end
-
 end
-FuelConsICE(1,:)=W(:)'./EtaICE(2,:)*T(2)./4;
-FuelConsICE(:,1)=0;
-FuelConsICE(1,1)=0;
+FuelConsICE(1,:)=W(:)'./EtaICE(2,:)*T(2);
 
-for i=1:length(P),
+
+for i=2:length(P),
     %%% For each value of P
-    j = 1;
-    while j<=length(T)
+    for j=2:length(T)
         %%% And each value of T, find the corresponding equivalent speed
         Ttemp=T(j);
         wtemp = (P(i) / Ttemp);
@@ -35,9 +27,6 @@ for i=1:length(P),
         if wtemp > wice_max
             wtemp = wice_max;
             eta(j)=0;
-        elseif wtemp<wice_min
-            wtemp = wice_min;
-            eta(j) = 0;
         else
             %%% find the efficiency that corresponds to thes
             eta(j) = interp2(W,T,EtaICE,wtemp,Ttemp,'spline');     %linear
@@ -47,25 +36,17 @@ for i=1:length(P),
             PtoT((i),3) = eta(j);
             PtoT((i),4) = wtemp;
         end
-        if eta(j)<0
-            j=length(T);
-        end
-        j=j+1;
     end
 end
 
 for i=2:length(P)-1, % Smooth a bit to make simulation less jumpy
-    PtoT(i,2)=(PtoT(i-1,2)*1/4+PtoT(i,2)*3/4);
-    PtoT(i,4)=(PtoT(i-1,4)*1/4+PtoT(i,4)*3/4);
+    PtoT(i,2)=(PtoT(i-1,2)+PtoT(i,2)+PtoT(i+1,2))/3;
+    PtoT(i,4)=(PtoT(i-1,4)+PtoT(i,4)+PtoT(i+1,4))/3;
 end
 
 Topt = spline(PtoT(:,4)',PtoT(:,2)',W);
 for i=1:length(W),
     Tlim(i) = min([Tice_max 2*Topt(i) Pice_max/(W(i)+eps)]); % Synthetically made upper torque limitation
-    if Tlim(i) <0
-        Tlim(i)=0;
-    end
-    
 end
 
 figure(1)
