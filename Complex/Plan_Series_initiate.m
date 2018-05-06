@@ -18,7 +18,7 @@ load IdealMotion;
 
 % Fuel parameters +++++++++++++++++++++
 
-Fuel=1;         % Gasoline (Fuel=1), Diesel (Fuel=2), Ethanol (Fuel=3)
+Fuel=4;         % Gasoline (Fuel=1), Diesel (Fuel=2), Ethanol (Fuel=3)
 
 if Fuel==1|Fuel==3, % Gasoline or Ethanol
     load EtaICE_OTTO;
@@ -48,7 +48,7 @@ else
 end
 
 
-wice_min = 800*2*pi/60; % 800 rpm idle speed ----- this could change based on cycle???? Changed to 1000
+wice_min = 1000*2*pi/60; % 800 rpm idle speed ----- this could change based on cycle???? Changed to 1000
 %Tice_max = Pice_max/(wice_max*row/(length(EtaICE)-1)); % Sets maximum torque on the basis of the maximum speed and the power (i.e. maximum power comes at the maximum efficiency point). Speed is scaled according to the cycle table
 Tice_max = 105;
 Pice_max = wice_max*Tice_max; %5E3; %%%%%%% set input into model
@@ -80,7 +80,7 @@ Pem1_max = 30000;%32.5*10000/60*2*pi()%20E3;       % Peak continuous power
 Tem1_max = 31;% 1.2*Tice_max;  % Peak continuous torque
 %wem1_max=wice_max; % EM mounted on cranc shaft
 
-load EtaEM%_THS;
+load EtaEM_THS;
 
 Tem1 = [0:2.5:32.5];
 Wem1 = [0:500:10000];
@@ -125,17 +125,17 @@ Wbatt = 201.6*6.5*3600;   % 100 Wh/kg, 13 kg
 
 % Pinput 21kW and Poutput 25kW
 
-% P_battmax = 25000;
-% P_battmin = 21000
+P_battmax = 25000;
+P_battmin = 21000;
 
 %[EtaBATT,Pbatt]=CreateBATTmap(P_battmin, P_battmax,Wbatt);
-[EtaBATT,Pbatt]=CreateBATTmap(Pem2_max,Wbatt);
 
-% battR = [0.7,0.63, 0.475, 0.4, 0.375, 0.38,0.37, 0.375,0.38, 0.375, 0.375]; % SOC of battery
-% battV = [202.5,210,213,216,218,221,222,223,224,227,237]; %OC battery voltage based on state of charge
-% SOC_tab = [0,10,20,30,40,50,60,70,80,90,100];
-
+battR = [0.7,0.63, 0.475, 0.4, 0.375, 0.38,0.37, 0.375,0.38, 0.375, 0.375]; % SOC of battery
+battV = [202.5,210,213,216,218,221,222,223,224,227,237]; %OC battery voltage based on state of charge
+SOC_tab = [0,10,20,30,40,50,60,70,80,90,100];
+%[EtaBATT,Pbatt]=CreateBATTmap(Pem2_max,Wbatt);
 SOC_batt_ref_value = 70;   %  [%]
+fully_charged = 100;
 OnOffMin = 30 ;
 OnOffMax = SOC_batt_ref_value-eps ;
 
