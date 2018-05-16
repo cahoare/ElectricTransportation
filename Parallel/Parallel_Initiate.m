@@ -16,15 +16,15 @@ load IdealMotion;
 ICEconventional=100000;
 
 % Specification when simulating a hybrid vehicle
-ICEpower=80000; % Normally ICEpower+EMpower should be 100kW
-EMpower=20000;
+ICEpower=65973; % Normally ICEpower+EMpower should be 100kW
+EMpower=50000;
 
-TorqueEMmax=200;
+TorqueEMmax=400;
 
 % Vehicle type ++++++++++++++++++++++++++++
 
 Fuel=1;         % Gasoline (Fuel=1), Diesel (Fuel=2), Ethanol (Fuel=3)
-Hybrid=0;       % 0 for conventional, 1 for parallell hybrid
+Hybrid=1;       % 0 for conventional, 1 for parallell hybrid
 Depletion=0;    % 0 for Charge Sustaining mode and 1 for depletion mode
 StopAndGo=0;    % 1 if stop & go is on
 Speedy=0;       % 1 for "sporty" driving
@@ -51,14 +51,14 @@ elseif Fuel==2,
 else
         'Erroneous fuel choice'
 end
-wice_min = 700*2*pi/60; % 700 rpm idle speed
+wice_min = 800*2*pi/60; % 700 rpm idle speed
 Tice_max = Pice_max/(wice_max*row/(length(EtaICE)-1));
 
 [PtoT,Tice,Wice,Tlim_ice,FuelConsICE]=CreateICEmap(Pice_max,wice_max,Tice_max,EtaICE);
 
 % Ratio for the final gear between the traction motor and the wheels   *************'
 
-gr2 = 1;
+gr2 = 5;
 
 
 % Mechanical parameters  ++++++++++++++++++
@@ -97,7 +97,7 @@ wem_max=wice_max; % EM mounted on cranc shaft
 
 % Power electronics efficiency (preset)
 
-EtaPE = 0.96;
+EtaPE = 0.98;
 
 % Fuel energy density [MJ/liter]
 if Fuel==1, % Gasoline
@@ -115,6 +115,7 @@ end
 Wbatt = 100*3600*13;   % 100 Wh/kg, 13 kg
 [EtaBATT,Pbatt]=CreateBATTmap(Pem_max,Wbatt);
 SOC_batt_ref = 70;   %   [%]
+SOC_batt_ref_value = 70;
 OnOffMin = 30 ;
 OnOffMax = SOC_batt_ref - eps ; % ML: In order to start the simulation correctly
 

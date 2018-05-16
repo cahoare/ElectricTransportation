@@ -141,7 +141,7 @@ OnOffMax = SOC_batt_ref_value-eps ;
 
 % Controller parameters **********************************
 
-Tau_charge = 10;   
+Tau_charge = 1;   
 ksoc = Wbatt/400/Tau_charge;
 ks = Jgenset/4/0.05;  % Assuming a 50 ms time constant in speed measurement
 

@@ -117,7 +117,7 @@ end
 
 % Battery parameters ++++++++++++++++++
 
-Wbatt = 201.6*6.5*3600;   % 100 Wh/kg, 13 kg
+Wbatt = 7000*3600;% 201.6*6.5*3600;   % 100 Wh/kg, 13 kg
 
 %%%% Generate battery efficiency map. Is greater than one for discharge as
 %%%% you will remove more charge from the battery when you discharge at
@@ -135,13 +135,13 @@ battV = [202.5,210,213,216,218,221,222,223,224,227,237]; %OC battery voltage bas
 SOC_tab = [0,10,20,30,40,50,60,70,80,90,100];
 %[EtaBATT,Pbatt]=CreateBATTmap(Pem2_max,Wbatt);
 SOC_batt_ref_value = 70;   %  [%]
-fully_charged = 100;
+fully_charged = 70;
 OnOffMin = 30 ;
 OnOffMax = SOC_batt_ref_value-eps ;
 
 % Controller parameters **********************************
 
-Tau_charge = 10;   
+Tau_charge = 1;   
 ksoc = Wbatt/400/Tau_charge;
 ks = Jgenset/4/0.05;  % Assuming a 50 ms time constant in speed measurement
 

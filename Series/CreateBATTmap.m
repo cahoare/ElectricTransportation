@@ -1,6 +1,6 @@
-function [Eta,Ptrm]=CreateBATTmap(Pbatt_min, Pbatt_max,Wbatt)
+function [Eta,Ptrm]=CreateBATTmap(Pbatt_max,Wbatt)
 
-Ptrm = [-Pbatt_min:2*Pbatt_max/21:Pbatt_max]'; % Terminal power
+Ptrm = [-Pbatt_max:2*Pbatt_max/21:Pbatt_max]'; % Terminal power
 
 % ML 2016
 % assume emf - resistance model with fix resistance and emf
@@ -10,15 +10,15 @@ Ptrm = [-Pbatt_min:2*Pbatt_max/21:Pbatt_max]'; % Terminal power
 % Assume 15% losses at nominal power; e*i_max=0.85*Ptrm_max, R*(i_max)^2=0.15*Ptrm_max;
 % i_max=0.85*Ptrm_max/e;  R = 0.15*Ptrm_max/(i_max)^2;
 
-if Wbatt<1000*3600
+if Wbatt<1500*3600
    typ = 1;     % Probably starter battery (12 V)
    e = 12;
-elseif (Wbatt>1000*3600) & (Wbatt<(5000*3600))
+elseif (Wbatt>1500*3600) & (Wbatt<(5000*3600))
     typ = 2;    % Probably Power Assist battery (100 V)
-    e = 201.6;
+    e = 100;
 elseif Wbatt>5000*3600
     typ = 3;    % Probably EV drive range battery (300 V)
-    e = 201.6;
+    e = 300;
 end
 
 i_max = 0.85*Pbatt_max/e;
@@ -30,10 +30,6 @@ for i=1:length(Ptrm),
     Ploss(i)=R*curr(i)^2;
     Eta(i)= (Ptrm(i)-Ploss(i))/(Ptrm(i)+eps);
 end
-
-battR = [0.7,0.63, 0.475, 0.4, 0.375, 0.38,0.37, 0.375,0.38, 0.375, 0.375]; % SOC of battery
-battV = [202.5,210,213,216,218,221,222,223,224,227,237]; %OC battery voltage based on state of charge
-SOC_tab = [0,10,20,30,40,50,60,70,80,90,100];
 
 figure(3)
 clf
